@@ -4,11 +4,11 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "start": "node index.js",
-    "watch": "nodemon index.js",
+    "start": "cross-env NODE_ENV=production node index.js",
+    "watch": "cross-env NODE_ENV=development nodemon index.js",
     "lint": "eslint .",
     "lint:fix": "node_modules/.bin/eslint . --fix",
-    "test": "jest --verbose"
+    "test": "cross-env NODE_ENV=test jest --verbose --runInBand"
   },
   "jest": {
     "testEnvironment": "node"
@@ -16,14 +16,18 @@
   "author": "Miika Somero",
   "license": "ISC",
   "devDependencies": {
+    "cross-env": "^7.0.0",
     "eslint": "^6.8.0",
     "jest": "^25.1.0",
-    "nodemon": "^2.0.2"
+    "nodemon": "^2.0.2",
+    "supertest": "^4.0.2"
   },
   "dependencies": {
     "bcrypt": "^4.0.0",
     "cors": "^2.8.5",
     "dotenv": "^8.2.0",
+    "express": "^4.17.1",
+    "jsonwebtoken": "^8.5.1",
     "pg": "^7.18.2"
   }
 }

@@ -1,0 +1,1 @@
+INSERT INTO Account (name, username, passwordHash) VALUES ('Miika Somero', 'somero', 'miika');

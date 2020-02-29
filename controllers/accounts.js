@@ -4,8 +4,8 @@ const accountsRouter = require('express').Router()
 
 accountsRouter.get('/', async (req, res, next) => {
   const query = {
-    text: 'SELECT * FROM Accounts',
-    params: []
+    text: 'SELECT id, name, username FROM Account',
+    values: []
   }
 
   try {
@@ -19,8 +19,8 @@ accountsRouter.get('/', async (req, res, next) => {
 
 accountsRouter.get('/:username', async (req, res, next) => {
   const query = {
-    text: 'SELECT * FROM Accounts WHERE id = $1',
-    params: [req.params.username]
+    text: 'SELECT id, name, username FROM Account WHERE username = $1',
+    values: [req.params.username]
   }
 
   try {
@@ -48,8 +48,8 @@ accountsRouter.post('/', async (req, res, next) => {
   const passwordHash = await bcrypt.hash(password, 10)
 
   const query = {
-    text: 'INSERT INTO Accounts (name, username, passwordHash) VALUES($1, $2, $3) RETURNING *',
-    params: [name, username, passwordHash]
+    text: 'INSERT INTO Account (name, username, passwordHash) VALUES($1, $2, $3) RETURNING id, name, username',
+    values: [name, username, passwordHash]
   }
 
   try {
