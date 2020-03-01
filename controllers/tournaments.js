@@ -1,15 +1,14 @@
-const db = require('../db')
+const { executeQuery } = require('../services/dbService')
 const middleware = require('../utils/middleware')
 const tournamentsRouter = require('express').Router()
 
 tournamentsRouter.get('/', async (req, res, next) => {
-  try {
-    const { rows } = await db.query('SELECT * FROM Tournament')
-    res.json(rows)
+  const rows = await executeQuery(
+    'SELECT * FROM Tournament',
+    next
+  )
 
-  } catch (exception) {
-    next(exception)
-  }
+  res.json(rows)
 })
 
 tournamentsRouter.post('/', middleware.validateToken, async (req, res, next) => {
@@ -18,13 +17,11 @@ tournamentsRouter.post('/', middleware.validateToken, async (req, res, next) => 
     values: [req.account_id, req.body.name, new Date(), true]
   }
 
-  try {
-    const { rows } = await db.query(query)
-    return res.json(rows[0])
+  const rows = await executeQuery(
+    query, next
+  )
 
-  } catch (exception) {
-    next(exception)
-  }
+  res.json(rows[0])
 })
 
 module.exports = tournamentsRouter

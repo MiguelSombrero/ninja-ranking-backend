@@ -1,13 +1,17 @@
 const app = require('./app')
 const http = require('http')
+const db = require('./db')
 const config = require('./utils/config')
-
+const logger = require('./utils/logger')
 const server = http.createServer(app)
 
 server.listen(config.PORT, () => {
-  console.log(`Server running on port ${config.PORT}`)
+  logger.info(`Server running on port ${config.PORT}`)
 }).on('error', (error) => {
-  console.log('message:', error.message)
-  console.log('stack:', error.stack)
-  console.log('name:', error.name)
+  logger.error('message:', error.message)
+  logger.error('stack:', error.stack)
+  logger.error('name:', error.name)
+}).on('close', () => {
+  logger.info('closing server')
+  db.closeDb()
 })

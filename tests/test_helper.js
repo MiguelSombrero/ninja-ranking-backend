@@ -1,34 +1,50 @@
 const db = require('../db')
+const bcrypt = require('bcrypt')
 
-const createAccount = (name, username, password) => {
+const createAccount = (id, name, username, password) => {
   return {
-    text: 'INSERT INTO Account (name, username, passwordHash) VALUES ($1, $2, $3)',
-    values: [name, username, password]
+    text: 'INSERT INTO Account (id, name, username, passwordHash) VALUES ($1, $2, $3, $4)',
+    values: [id, name, username, password]
   }
 }
 
-const initializeDatabase = async () => {
-  try {
-    await db.query({ text: 'DELETE FROM Account', values: [] })
-    await db.query(createAccount('Miika Somero', 'somero', 'miika'))
-    await db.query(createAccount('Jukka Jukkanen', 'jukka', 'jukka'))
-
-  } catch (exception) {
-    console.log('initializing of test database failed', exception)
+const createTournament = (id, account_id, name, created, active) => {
+  return {
+    text: 'INSERT INTO Tournament(id, account_id, name, created, active) VALUES ($1, $2, $3, $4, $5) RETURNING *',
+    values: [id, account_id, name, created, active]
   }
+}
+
+const emptyDatabase = async () => {
+  await db.query('DELETE FROM Account')
+  await db.query('DELETE FROM Tournament')
+}
+
+const initializeAccounts = async () => {
+  await db.query(createAccount(1, 'Miika Somero', 'somero', await bcrypt.hash('miika', 10)))
+  await db.query(createAccount(2, 'Jukka Jukkanen', 'jukka', await bcrypt.hash('jukka', 10)))
+}
+
+const initializeTournaments = async () => {
+  await db.query(createTournament(3, 1, 'Myllypuro Open', new Date(), true))
+  await db.query(createTournament(4, 1, 'Turnajaiset', new Date(), false))
+  await db.query(createTournament(5, 2, 'Kilpailut', new Date(), true))
 }
 
 const accountsInDb = async () => {
-  try {
-    const { rows } = await db.query({ text: 'SELECT * FROM Account', values: [] })
-    return rows
+  const { rows } = await db.query('SELECT * FROM Account')
+  return rows
+}
 
-  } catch (exception) {
-    console.log('finding accounts failed')
-  }
+const tournamentsInDb = async () => {
+  const { rows } = await db.query('SELECT * FROM Tournament')
+  return rows
 }
 
 module.exports = {
-  initializeDatabase,
-  accountsInDb
+  initializeAccounts,
+  initializeTournaments,
+  emptyDatabase,
+  accountsInDb,
+  tournamentsInDb
 }

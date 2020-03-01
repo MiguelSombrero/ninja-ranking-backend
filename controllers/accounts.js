@@ -1,20 +1,14 @@
-const db = require('../db')
+const { executeQuery } = require('../services/dbService')
 const bcrypt = require('bcrypt')
 const accountsRouter = require('express').Router()
 
 accountsRouter.get('/', async (req, res, next) => {
-  const query = {
-    text: 'SELECT id, name, username FROM Account',
-    values: []
-  }
+  const rows = await executeQuery(
+    'SELECT id, name, username FROM Account',
+    next
+  )
 
-  try {
-    const { rows } = await db.query(query)
-    res.json(rows)
-
-  } catch (exception) {
-    next(exception)
-  }
+  res.json(rows)
 })
 
 accountsRouter.get('/:username', async (req, res, next) => {
@@ -23,17 +17,13 @@ accountsRouter.get('/:username', async (req, res, next) => {
     values: [req.params.username]
   }
 
-  try {
-    const { rows } = await db.query(query)
-    const user = rows[0]
+  const rows = await executeQuery(
+    query, next
+  )
 
-    user === null
-      ? res.status(204).end()
-      : res.json(user)
-
-  } catch (exception) {
-    next(exception)
-  }
+  rows.length === 0
+    ? res.status(204).end()
+    : res.json(rows[0])
 })
 
 accountsRouter.post('/', async (req, res, next) => {
@@ -52,13 +42,11 @@ accountsRouter.post('/', async (req, res, next) => {
     values: [name, username, passwordHash]
   }
 
-  try {
-    const { rows } = await db.query(query)
-    res.json(rows[0])
+  const rows = await executeQuery(
+    query, next
+  )
 
-  } catch (exception) {
-    next(exception)
-  }
+  res.json(rows[0])
 })
 
 module.exports = accountsRouter
