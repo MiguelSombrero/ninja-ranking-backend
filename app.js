@@ -5,18 +5,21 @@ const app = express()
 const cors = require('cors')
 const accountsRouter = require('./controllers/accounts.js')
 const loginRouter = require('./controllers/login')
+const tournamentRouter = require('./controllers/tournaments')
 const middleware = require('./utils/middleware')
 const logger = require('./utils/logger')
 
-logger.info('connecting to', config.CONNECTION_STRING)
+logger.info('connecting to', config.DATABASE_URL)
 
 app.use(cors())
 app.use(express.static('build'))
 app.use(bodyParser.json())
 app.use(middleware.requestLogger)
+app.use(middleware.tokenExtractor)
 
 app.use('/api/login', loginRouter)
 app.use('/api/accounts', accountsRouter)
+app.use('/api/tournaments', tournamentRouter)
 
 app.get('*', (req, res) => {
   res.sendFile(`${__dirname}/build/index.html`)

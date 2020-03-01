@@ -1,13 +1,13 @@
 require('dotenv').config()
 
 let PORT=process.env.PORT
-let CONNECTION_STRING=process.env.CONNECTION_STRING
+let DATABASE_URL=process.env.DATABASE_URL
 
 if (process.env.NODE_ENV === 'test') {
-  CONNECTION_STRING = process.env.TEST_CONNECTION_STRING
+  DATABASE_URL = process.env.TEST_DATABASE_URL
 }
 
 module.exports = {
   PORT,
-  CONNECTION_STRING
+  DATABASE_URL
 }

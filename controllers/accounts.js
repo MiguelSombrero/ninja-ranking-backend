@@ -54,8 +54,7 @@ accountsRouter.post('/', async (req, res, next) => {
 
   try {
     const { rows } = await db.query(query)
-    const user = rows[0]
-    res.json(user)
+    res.json(rows[0])
 
   } catch (exception) {
     next(exception)

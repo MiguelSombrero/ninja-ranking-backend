@@ -33,6 +33,9 @@ const validateToken = (req, res, next) => {
       error: 'token is invalid'
     })
   }
+
+  req.account_id = decodedToken.id
+
   next()
 }
 
