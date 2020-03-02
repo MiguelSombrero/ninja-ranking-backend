@@ -15,4 +15,25 @@ const executeQuery = async (query, next) => {
   }
 }
 
-module.exports = { executeQuery }
+const executeMultipleQueries = async (queries, next) => {
+  const client = await db.getClient()
+
+  try {
+    client.query('BEGIN')
+    await queries.map(query => client.query(query))
+    client.query('COMMIT')
+    return true
+
+  } catch (exception) {
+    client.query('ROLLBACK')
+    next(exception)
+
+  } finally {
+    client.release()
+  }
+}
+
+module.exports = {
+  executeQuery,
+  executeMultipleQueries
+}

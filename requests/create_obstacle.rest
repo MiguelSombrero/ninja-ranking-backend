@@ -1,0 +1,8 @@
+post http://localhost:3001/api/obstacles
+Content-Type: application/json
+Authorization: bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6Im1paWthIiwiaWQiOjIsImlhdCI6MTU4MzA1MzgyOH0.hP77XkQLFUvb6TqDBHst0DaMsPMAta-fJvy2cqbPRTU
+
+{
+  "tournament_id": 2,
+  "name": "Voimailu"
+}

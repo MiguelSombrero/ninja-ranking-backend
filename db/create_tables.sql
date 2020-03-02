@@ -23,18 +23,21 @@ CREATE TABLE Account(
 
 CREATE TABLE Result(
     id serial PRIMARY KEY,
-    tournament_id INTEGER,
     player_id INTEGER,
     time INTEGER,
-    FOREIGN KEY (tournament_id) REFERENCES Tournament (id) ON DELETE CASCADE,
     FOREIGN KEY (player_id) REFERENCES Player (id) ON DELETE CASCADE
  );
 
  CREATE TABLE Obstacle(
     id serial PRIMARY KEY,
     tournament_id INTEGER,
-    result_id INTEGER,
     name VARCHAR (50) NOT NULL,
-    FOREIGN KEY (tournament_id) REFERENCES Tournament (id) ON DELETE CASCADE,
-    FOREIGN KEY (result_id) REFERENCES Result (id)
+    FOREIGN KEY (tournament_id) REFERENCES Tournament (id) ON DELETE CASCADE
+ );
+
+ CREATE TABLE ObstacleResult(
+    result_id INTEGER,
+    obstacle_id INTEGER,
+    FOREIGN KEY (result_id) REFERENCES Result (id),
+    FOREIGN KEY (obstacle_id) REFERENCES Obstacle (id)
  );

@@ -1,0 +1,11 @@
+post http://localhost:3001/api/results
+Content-Type: application/json
+Authorization: bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6Im1paWthIiwiaWQiOjIsImlhdCI6MTU4MzA1MzgyOH0.hP77XkQLFUvb6TqDBHst0DaMsPMAta-fJvy2cqbPRTU
+
+{
+  "player_id": 2,
+  "time": 112,
+  "passed_obstacles": [
+    2, 4
+  ]
+}
