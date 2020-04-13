@@ -4,7 +4,7 @@ const tournamentsRouter = require('express').Router()
 
 tournamentsRouter.get('/', async (req, res, next) => {
   const rows = await executeQuery(
-    'SELECT * FROM Tournament',
+    'SELECT Tournament.id, Tournament.account_id, Tournament.name, Tournament.created, Tournament.active, json_agg(Obstacle) AS obstacles FROM Tournament LEFT JOIN Obstacle ON Tournament.id = Obstacle.tournament_id GROUP BY Tournament.id',
     next
   )
 

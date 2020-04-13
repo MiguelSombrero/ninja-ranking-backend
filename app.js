@@ -20,12 +20,12 @@ app.use(bodyParser.json())
 app.use(middleware.requestLogger)
 app.use(middleware.tokenExtractor)
 
-app.use('/api/login', loginRouter)
-app.use('/api/accounts', accountsRouter)
-app.use('/api/tournaments', tournamentRouter)
-app.use('/api/players', playersRouter)
-app.use('/api/results', resultsRouter)
-app.use('/api/obstacles', obstaclesRouter)
+app.use('/login', loginRouter)
+app.use('/accounts', accountsRouter)
+app.use('/tournaments', tournamentRouter)
+app.use('/players', playersRouter)
+app.use('/results', resultsRouter)
+app.use('/obstacles', obstaclesRouter)
 
 app.get('*', (req, res) => {
   res.sendFile(`${__dirname}/build/index.html`)
