@@ -1,14 +1,10 @@
-FROM node
+FROM node:10
 
 WORKDIR /app
 COPY . /app
 
-RUN rm -rf node_modules/ && \
-    npm install && \
-    npm build
+RUN npm install
 
 USER node
 
-EXPOSE 3001
-
-CMD npm run start
+CMD npm run watch

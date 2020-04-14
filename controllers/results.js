@@ -11,7 +11,7 @@ const generateJoinTableQuery = (result_id, obstacle_id) => {
 
 resultsRouter.get('/', async (req, res, next) => {
   const rows = await executeQuery(
-    'SELECT * FROM Result',
+    'SELECT Result.id, Result.player_id, Result.time, array_agg(ObstacleResult.obstacle_id) AS passed_obstacles FROM Result LEFT JOIN ObstacleResult ON Result.id = ObstacleResult.result_id GROUP BY Result.id',
     next
   )
 
