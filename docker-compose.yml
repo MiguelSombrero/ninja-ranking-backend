@@ -27,6 +27,8 @@ services:
         - DATABASE_URL=postgresql://postgres:example@db:5432/postgres
       volumes:
         - ./controllers/:/app/controllers/
+        - ./db/:/app/db/
+        - ./service/:/app/service/
       container_name: ninja-back
       depends_on:
         - db

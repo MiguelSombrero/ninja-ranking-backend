@@ -1,20 +1,17 @@
 const { executeQuery, executeMultipleQueries } = require('../services/dbService')
 const middleware = require('../utils/middleware')
 const resultsRouter = require('express').Router()
+const { SELECT_RESULTS, INSERT_RESULT, INSERT_OBSTACLERESULT } = require('../db/queries')
 
 const generateJoinTableQuery = (result_id, obstacle_id) => {
   return {
-    text: 'INSERT INTO ObstacleResult(result_id, obstacle_id) VALUES ($1, $2)',
+    text: INSERT_OBSTACLERESULT,
     values: [result_id, obstacle_id]
   }
 }
 
 resultsRouter.get('/', async (req, res, next) => {
-  const rows = await executeQuery(
-    'SELECT Result.id, Result.player_id, Result.time, array_agg(ObstacleResult.obstacle_id) AS passed_obstacles FROM Result LEFT JOIN ObstacleResult ON Result.id = ObstacleResult.result_id GROUP BY Result.id',
-    next
-  )
-
+  const rows = await executeQuery(SELECT_RESULTS, next)
   res.json(rows)
 })
 
@@ -22,7 +19,7 @@ resultsRouter.post('/', middleware.validateToken, async (req, res, next) => {
   const { player_id, time, passed_obstacles } = req.body
 
   const query = {
-    text: 'INSERT INTO Result(player_id, time) VALUES ($1, $2) RETURNING *',
+    text: INSERT_RESULT,
     values: [player_id, time]
   }
 
@@ -38,7 +35,10 @@ resultsRouter.post('/', middleware.validateToken, async (req, res, next) => {
     queries, next
   )
 
-  res.json(rows[0])
+  const savedResult = rows[0]
+  savedResult.passed_obstacles = passed_obstacles
+
+  res.json(savedResult)
 })
 
 module.exports = resultsRouter

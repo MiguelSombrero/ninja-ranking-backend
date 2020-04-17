@@ -1,13 +1,10 @@
 const { executeQuery } = require('../services/dbService')
 const middleware = require('../utils/middleware')
 const playersRouter = require('express').Router()
+const { SELECT_PLAYERS, INSERT_PLAYER } = require('../db/queries')
 
 playersRouter.get('/', async (req, res, next) => {
-  const rows = await executeQuery(
-    'SELECT Player.id, Player.tournament_id, Player.nickname, json_agg(Result) AS results FROM Player LEFT JOIN Result ON Player.id = Result.player_id GROUP BY Player.id',
-    next
-  )
-
+  const rows = await executeQuery(SELECT_PLAYERS, next)
   res.json(rows)
 })
 
@@ -15,7 +12,7 @@ playersRouter.post('/', middleware.validateToken, async (req, res, next) => {
   const { tournament_id, nickname } = req.body
 
   const query = {
-    text: 'INSERT INTO Player(tournament_id, nickname) VALUES ($1, $2) RETURNING *',
+    text: INSERT_PLAYER,
     values: [tournament_id, nickname]
   }
 
