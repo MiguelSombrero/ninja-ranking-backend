@@ -20,7 +20,7 @@ playersRouter.post('/', middleware.validateToken, async (req, res, next) => {
     query, next
   )
 
-  res.json(rows[0])
+  res.json({ ...rows[0], results: [] })
 })
 
 module.exports = playersRouter

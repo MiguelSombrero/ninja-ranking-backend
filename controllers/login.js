@@ -2,12 +2,13 @@ const jwt = require('jsonwebtoken')
 const { executeQuery } = require('../services/dbService')
 const bcrypt = require('bcrypt')
 const loginRouter = require('express').Router()
+const { SELECT_ACCOUNT } = require('../db/queries')
 
 loginRouter.post('/', async (req, res, next) => {
   const body = req.body
 
   const query = {
-    text: 'SELECT * FROM Account WHERE username = $1',
+    text: SELECT_ACCOUNT,
     values: [body.username]
   }
 

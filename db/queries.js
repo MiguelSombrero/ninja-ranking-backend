@@ -17,6 +17,15 @@ const SELECT_TOURNAMENTS =
   'LEFT JOIN Obstacle ON Tournament.id = Obstacle.tournament_id ' +
   'GROUP BY Tournament.id'
 
+const SELECT_ACCOUNT =
+  'SELECT * ' +
+  'FROM Account ' +
+  'WHERE username = $1'
+
+const SELECT_OBSTACLES =
+  'SELECT * ' +
+  'FROM Obstacle'
+
 const INSERT_PLAYER =
   'INSERT INTO Player(tournament_id, nickname) ' +
   'VALUES ($1, $2) ' +
@@ -36,6 +45,16 @@ const INSERT_TOURNAMENT =
   'VALUES ($1, $2, $3, $4) ' +
   'RETURNING *'
 
+const INSERT_ACCOUNT =
+  'INSERT INTO Account (name, username, passwordHash) ' +
+  'VALUES($1, $2, $3) ' +
+  'RETURNING id, name, username'
+
+const INSERT_OBSTACLE =
+'INSERT INTO Obstacle(tournament_id, name) ' +
+'VALUES ($1, $2) ' +
+'RETURNING *'
+
 const UPDATE_TOURNAMENT =
   'UPDATE Tournament ' +
   'SET active = $1 ' +
@@ -46,9 +65,13 @@ module.exports = {
   SELECT_RESULTS,
   SELECT_PLAYERS,
   SELECT_TOURNAMENTS,
+  SELECT_ACCOUNT,
+  SELECT_OBSTACLES,
   INSERT_PLAYER,
   INSERT_RESULT,
   INSERT_OBSTACLERESULT,
   INSERT_TOURNAMENT,
-  UPDATE_TOURNAMENT
+  INSERT_OBSTACLE,
+  UPDATE_TOURNAMENT,
+  INSERT_ACCOUNT
 }
