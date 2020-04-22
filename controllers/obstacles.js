@@ -4,8 +4,13 @@ const obstaclesRouter = require('express').Router()
 const { SELECT_OBSTACLES, INSERT_OBSTACLE } = require('../db/queries')
 
 obstaclesRouter.get('/', async (req, res, next) => {
-  const rows = await executeQuery(SELECT_OBSTACLES, next)
-  res.json(rows)
+  try {
+    const rows = await executeQuery(SELECT_OBSTACLES, next)
+    res.json(rows)
+
+  } catch (exception) {
+    next(exception)
+  }
 })
 
 obstaclesRouter.post('/', middleware.validateToken, async (req, res, next) => {
@@ -16,11 +21,16 @@ obstaclesRouter.post('/', middleware.validateToken, async (req, res, next) => {
     values: [tournament_id, name]
   }
 
-  const rows = await executeQuery(
-    query, next
-  )
+  try {
+    const rows = await executeQuery(
+      query, next
+    )
 
-  res.json(rows[0])
+    res.json(rows[0])
+
+  } catch (exception) {
+    next(exception)
+  }
 })
 
 module.exports = obstaclesRouter

@@ -19,11 +19,13 @@ accountsRouter.post('/', async (req, res, next) => {
     values: [name, username, passwordHash]
   }
 
-  const rows = await executeQuery(
-    query, next
-  )
+  try {
+    const rows = await executeQuery(query, next)
+    res.json(rows[0])
 
-  res.json(rows[0])
+  } catch (exception) {
+    next(exception)
+  }
 })
 
 module.exports = accountsRouter

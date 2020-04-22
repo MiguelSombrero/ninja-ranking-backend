@@ -9,31 +9,6 @@ beforeEach(async () => {
   await helper.initializeAccounts()
 })
 
-describe('getting accounts from database', () => {
-  test('accounts are returned as json', async () => {
-    await api
-      .get('/api/accounts')
-      .expect(200)
-      .expect('Content-Type', /application\/json/)
-  })
-
-  test('returns all accounts', async () => {
-    const initialAccounts = await helper.accountsInDb()
-    const res = await api.get('/api/accounts')
-    expect(res.body.length).toBe(initialAccounts.length)
-  })
-
-  test('returns account with all the fields', async () => {
-    const res = await api.get('/api/accounts')
-
-    expect(res.body[0].id).toBeDefined()
-    expect(res.body[0].name).toBeDefined()
-    expect(res.body[0].username).toBeDefined()
-    expect(res.body[0].password).not.toBeDefined()
-    expect(res.body[0].passwordhash).not.toBeDefined()
-  })
-})
-
 describe('saving accounts to database', () => {
   test('valid account can be added to db', async () => {
     const initialAccounts = await helper.accountsInDb()
@@ -45,7 +20,7 @@ describe('saving accounts to database', () => {
     }
 
     const res = await api
-      .post('/api/accounts')
+      .post('/accounts')
       .send(account)
       .expect(200)
       .expect('Content-Type', /application\/json/)
@@ -58,6 +33,105 @@ describe('saving accounts to database', () => {
 
     const accountsAtEnd = await helper.accountsInDb()
     expect(initialAccounts.length + 1).toBe(accountsAtEnd.length)
+  })
+
+  test('cannot add account with same username', async () => {
+    const initialAccounts = await helper.accountsInDb()
+
+    const account = {
+      name: 'Miika Juhani',
+      username: 'somero',
+      password: 'salainen'
+    }
+
+    const res = await api
+      .post('/accounts')
+      .send(account)
+      .expect(400)
+      .expect('Content-Type', /application\/json/)
+
+    const accountsAtEnd = await helper.accountsInDb()
+    expect(res.body.error).toContain('duplicate key value violates unique constraint')
+    expect(initialAccounts.length).toBe(accountsAtEnd.length)
+  })
+
+  test('cannot add account with too short password', async () => {
+    const initialAccounts = await helper.accountsInDb()
+
+    const account = {
+      name: 'Miika Juhani',
+      username: 'juhani',
+      password: 'sala'
+    }
+
+    const res = await api
+      .post('/accounts')
+      .send(account)
+      .expect(401)
+      .expect('Content-Type', /application\/json/)
+
+    const accountsAtEnd = await helper.accountsInDb()
+    expect(res.body.error).toContain('password must be between 5-20 characters')
+    expect(initialAccounts.length).toBe(accountsAtEnd.length)
+  })
+
+  test('cannot add account with too long password', async () => {
+    const initialAccounts = await helper.accountsInDb()
+    const password = helper.stringCreator(21)
+
+    const account = {
+      name: 'Miika Juhani',
+      username: 'juhani',
+      password
+    }
+
+    const res = await api
+      .post('/accounts')
+      .send(account)
+      .expect(401)
+      .expect('Content-Type', /application\/json/)
+
+    const accountsAtEnd = await helper.accountsInDb()
+    expect(res.body.error).toContain('password must be between 5-20 characters')
+    expect(initialAccounts.length).toBe(accountsAtEnd.length)
+  })
+
+  test('cannot add account without name', async () => {
+    const initialAccounts = await helper.accountsInDb()
+
+    const account = {
+      username: 'juhani',
+      password: 'salainen'
+    }
+
+    const res = await api
+      .post('/accounts')
+      .send(account)
+      .expect(400)
+      .expect('Content-Type', /application\/json/)
+
+    const accountsAtEnd = await helper.accountsInDb()
+    expect(res.body.error).toContain('null value in column "name" violates not-null constraint')
+    expect(initialAccounts.length).toBe(accountsAtEnd.length)
+  })
+
+  test('cannot add account without username', async () => {
+    const initialAccounts = await helper.accountsInDb()
+
+    const account = {
+      name: 'juhani',
+      password: 'salainen'
+    }
+
+    const res = await api
+      .post('/accounts')
+      .send(account)
+      .expect(400)
+      .expect('Content-Type', /application\/json/)
+
+    const accountsAtEnd = await helper.accountsInDb()
+    expect(res.body.error).toContain('null value in column "username" violates not-null constraint')
+    expect(initialAccounts.length).toBe(accountsAtEnd.length)
   })
 })
 

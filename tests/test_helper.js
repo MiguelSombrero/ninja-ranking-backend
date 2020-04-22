@@ -15,9 +15,29 @@ const createTournament = (id, account_id, name, created, active) => {
   }
 }
 
+const createObstacle = (id, tournament_id, name) => {
+  return {
+    text: 'INSERT INTO Obstacle(id, tournament_id, name) VALUES ($1, $2, $3) RETURNING *',
+    values: [id, tournament_id, name]
+  }
+}
+
+const createPlayer = (id, tournament_id, nickname) => {
+  return {
+    text: 'INSERT INTO Player(id, tournament_id, nickname) VALUES ($1, $2, $3) RETURNING *',
+    values: [id, tournament_id, nickname]
+  }
+}
+
+const stringCreator = length => 'a'.repeat(length)
+
 const emptyDatabase = async () => {
   await db.query('DELETE FROM Account')
   await db.query('DELETE FROM Tournament')
+  await db.query('DELETE FROM Obstacle')
+  await db.query('DELETE FROM Player')
+  await db.query('DELETE FROM Result')
+  await db.query('DELETE FROM ObstacleResult')
 }
 
 const initializeAccounts = async () => {
@@ -28,7 +48,20 @@ const initializeAccounts = async () => {
 const initializeTournaments = async () => {
   await db.query(createTournament(3, 1, 'Myllypuro Open', new Date(), true))
   await db.query(createTournament(4, 1, 'Turnajaiset', new Date(), false))
-  await db.query(createTournament(5, 2, 'Kilpailut', new Date(), true))
+}
+
+const initializeObstacles = async () => {
+  await db.query(createObstacle(5, 3, 'Hiihto'))
+  await db.query(createObstacle(6, 3, 'Juoksu'))
+  await db.query(createObstacle(7, 4, 'Hiihto'))
+  await db.query(createObstacle(8, 4, 'Uinti'))
+}
+
+const initializePlayers = async () => {
+  await db.query(createPlayer(9, 3, 'Jari J'))
+  await db.query(createPlayer(10, 3, 'Jukka H'))
+  await db.query(createPlayer(11, 4, 'Miika Milliskukko mipsis'))
+  await db.query(createPlayer(12, 4, 'Siiri'))
 }
 
 const accountsInDb = async () => {
@@ -41,10 +74,25 @@ const tournamentsInDb = async () => {
   return rows
 }
 
+const obstaclesInDb = async () => {
+  const { rows } = await db.query('SELECT * FROM Obstacle')
+  return rows
+}
+
+const playersInDb = async () => {
+  const { rows } = await db.query('SELECT * FROM Player')
+  return rows
+}
+
 module.exports = {
   initializeAccounts,
   initializeTournaments,
+  initializeObstacles,
+  initializePlayers,
+  stringCreator,
   emptyDatabase,
   accountsInDb,
-  tournamentsInDb
+  tournamentsInDb,
+  obstaclesInDb,
+  playersInDb
 }

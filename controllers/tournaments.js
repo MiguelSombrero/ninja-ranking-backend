@@ -4,8 +4,13 @@ const tournamentsRouter = require('express').Router()
 const { SELECT_TOURNAMENTS, INSERT_TOURNAMENT, UPDATE_TOURNAMENT } = require('../db/queries')
 
 tournamentsRouter.get('/', async (req, res, next) => {
-  const rows = await executeQuery(SELECT_TOURNAMENTS, next)
-  res.json(rows)
+  try {
+    const rows = await executeQuery(SELECT_TOURNAMENTS, next)
+    res.json(rows)
+
+  } catch(exception) {
+    next(exception)
+  }
 })
 
 tournamentsRouter.post('/', middleware.validateToken, async (req, res, next) => {
@@ -14,11 +19,16 @@ tournamentsRouter.post('/', middleware.validateToken, async (req, res, next) => 
     values: [req.account_id, req.body.name, new Date(), true]
   }
 
-  const rows = await executeQuery(
-    query, next
-  )
+  try {
+    const rows = await executeQuery(
+      query, next
+    )
 
-  res.json(rows[0])
+    res.json(rows[0])
+
+  } catch(exception) {
+    next(exception)
+  }
 })
 
 tournamentsRouter.put('/:id', middleware.validateToken, async (req, res, next) => {
@@ -30,11 +40,16 @@ tournamentsRouter.put('/:id', middleware.validateToken, async (req, res, next) =
     values: [active, tournament_id]
   }
 
-  const rows = await executeQuery(
-    query, next
-  )
+  try {
+    const rows = await executeQuery(
+      query, next
+    )
 
-  res.json(rows[0])
+    res.json(rows[0])
+
+  } catch(exception) {
+    next(exception)
+  }
 })
 
 module.exports = tournamentsRouter

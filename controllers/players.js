@@ -4,8 +4,13 @@ const playersRouter = require('express').Router()
 const { SELECT_PLAYERS, INSERT_PLAYER } = require('../db/queries')
 
 playersRouter.get('/', async (req, res, next) => {
-  const rows = await executeQuery(SELECT_PLAYERS, next)
-  res.json(rows)
+  try {
+    const rows = await executeQuery(SELECT_PLAYERS, next)
+    res.json(rows)
+
+  } catch (exception) {
+    next(exception)
+  }
 })
 
 playersRouter.post('/', middleware.validateToken, async (req, res, next) => {
@@ -16,11 +21,16 @@ playersRouter.post('/', middleware.validateToken, async (req, res, next) => {
     values: [tournament_id, nickname]
   }
 
-  const rows = await executeQuery(
-    query, next
-  )
+  try {
+    const rows = await executeQuery(
+      query, next
+    )
 
-  res.json({ ...rows[0], results: [] })
+    res.json({ ...rows[0], results: [] })
+
+  } catch (exception) {
+    next(exception)
+  }
 })
 
 module.exports = playersRouter
