@@ -29,15 +29,29 @@ const createPlayer = (id, tournament_id, nickname) => {
   }
 }
 
+const createResult = (id, player_id, time) => {
+  return {
+    text: 'INSERT INTO Result(id, player_id, time) VALUES ($1, $2, $3) RETURNING *',
+    values: [id, player_id, time]
+  }
+}
+
+const createObstacleResult = (result_id, obstacle_id) => {
+  return {
+    text: 'INSERT INTO ObstacleResult(result_id, obstacle_id) VALUES ($1, $2) RETURNING *',
+    values: [result_id, obstacle_id]
+  }
+}
+
 const stringCreator = length => 'a'.repeat(length)
 
 const emptyDatabase = async () => {
+  await db.query('DELETE FROM ObstacleResult')
   await db.query('DELETE FROM Account')
   await db.query('DELETE FROM Tournament')
   await db.query('DELETE FROM Obstacle')
   await db.query('DELETE FROM Player')
   await db.query('DELETE FROM Result')
-  await db.query('DELETE FROM ObstacleResult')
 }
 
 const initializeAccounts = async () => {
@@ -64,6 +78,20 @@ const initializePlayers = async () => {
   await db.query(createPlayer(12, 4, 'Siiri'))
 }
 
+const initializeResults = async () => {
+  await db.query(createResult(13, 9, 23))
+  await db.query(createResult(14, 10, 33))
+  await db.query(createResult(15, 11, 19))
+
+  await db.query(createObstacleResult(13, 5))
+  await db.query(createObstacleResult(13, 6))
+  await db.query(createObstacleResult(13, 7))
+  await db.query(createObstacleResult(13, 8))
+  await db.query(createObstacleResult(14, 5))
+  await db.query(createObstacleResult(15, 6))
+  await db.query(createObstacleResult(15, 8))
+}
+
 const accountsInDb = async () => {
   const { rows } = await db.query('SELECT * FROM Account')
   return rows
@@ -84,15 +112,22 @@ const playersInDb = async () => {
   return rows
 }
 
+const resultsInDb = async () => {
+  const { rows } = await db.query('SELECT * FROM Result')
+  return rows
+}
+
 module.exports = {
   initializeAccounts,
   initializeTournaments,
   initializeObstacles,
   initializePlayers,
+  initializeResults,
   stringCreator,
   emptyDatabase,
   accountsInDb,
   tournamentsInDb,
   obstaclesInDb,
-  playersInDb
+  playersInDb,
+  resultsInDb
 }

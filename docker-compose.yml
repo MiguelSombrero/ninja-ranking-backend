@@ -38,8 +38,6 @@ services:
       restart: unless-stopped
       environment:
         - POSTGRES_PASSWORD=example
-      ports:
-        - 5432:5432
       volumes:
         - ./data:/var/lib/postgresql/data
         - ./db/docker-entrypoint-initdb.d:/docker-entrypoint-initdb.d:ro

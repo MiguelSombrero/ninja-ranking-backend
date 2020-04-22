@@ -12,7 +12,7 @@ const SELECT_PLAYERS =
   'GROUP BY Player.id'
 
 const SELECT_TOURNAMENTS =
-  'SELECT Tournament.id, Tournament.account_id, Tournament.name, Tournament.created, Tournament.active, json_agg(Obstacle) AS obstacles ' +
+  'SELECT Tournament.id, Tournament.account_id, Tournament.name, Tournament.created, Tournament.active, COALESCE(json_agg(Obstacle) FILTER (WHERE Obstacle.id IS NOT NULL), \'[]\') AS obstacles ' +
   'FROM Tournament ' +
   'LEFT JOIN Obstacle ON Tournament.id = Obstacle.tournament_id ' +
   'GROUP BY Tournament.id'

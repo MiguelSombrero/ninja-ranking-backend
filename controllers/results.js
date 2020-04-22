@@ -11,8 +11,13 @@ const generateJoinTableQuery = (result_id, obstacle_id) => {
 }
 
 resultsRouter.get('/', async (req, res, next) => {
-  const rows = await executeQuery(SELECT_RESULTS, next)
-  res.json(rows)
+  try {
+    const rows = await executeQuery(SELECT_RESULTS, next)
+    res.json(rows)
+
+  } catch (exception) {
+    next(exception)
+  }
 })
 
 resultsRouter.post('/', middleware.validateToken, async (req, res, next) => {
@@ -23,22 +28,24 @@ resultsRouter.post('/', middleware.validateToken, async (req, res, next) => {
     values: [player_id, time]
   }
 
-  const rows = await executeQuery(
-    query, next
-  )
+  try {
+    const rows = await executeQuery(
+      query, next
+    )
 
-  const queries = passed_obstacles.map(
-    obstacle_id => generateJoinTableQuery(rows[0].id, obstacle_id)
-  )
+    const queries = passed_obstacles.map(
+      obstacle_id => generateJoinTableQuery(rows[0].id, obstacle_id)
+    )
 
-  await executeMultipleQueries(
-    queries, next
-  )
+    await executeMultipleQueries(queries, next)
 
-  const savedResult = rows[0]
-  savedResult.passed_obstacles = passed_obstacles
+    const savedResult = rows[0]
+    savedResult.passed_obstacles = passed_obstacles
+    res.json(savedResult)
 
-  res.json(savedResult)
+  } catch (exception) {
+    next(exception)
+  }
 })
 
 module.exports = resultsRouter

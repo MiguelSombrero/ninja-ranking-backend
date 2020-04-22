@@ -12,6 +12,7 @@ beforeEach(async () => {
   await helper.initializeTournaments()
   await helper.initializeObstacles()
   await helper.initializePlayers()
+  await helper.initializeResults()
 
   login = await api
     .post('/login')
@@ -38,8 +39,7 @@ describe('getting players from database', () => {
     expect(res.body[0].id).toBeDefined()
     expect(res.body[0].nickname).toBeDefined()
     expect(res.body[0].tournament_id).toBeDefined()
-
-    // add check for results
+    expect(res.body[0].results).toBeDefined()
   })
 })
 
@@ -90,8 +90,7 @@ describe('saving players to database', () => {
     const initialPlayers = await helper.playersInDb()
 
     const player = {
-      tournament_id: 3,
-      nickname: 'Riku'
+      tournament_id: 3
     }
 
     const res = await api
@@ -105,7 +104,6 @@ describe('saving players to database', () => {
     expect(res.body.error).toContain('null value in column "nickname" violates not-null constraint')
     expect(initialPlayers.length).toBe(playersAtEnd.length)
   })
-
 })
 
 afterAll(() => {
