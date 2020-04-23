@@ -7,4 +7,4 @@ RUN npm install
 
 USER node
 
-CMD npm run watch
+CMD npm run start

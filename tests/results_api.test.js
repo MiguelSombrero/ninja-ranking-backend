@@ -36,7 +36,6 @@ describe('getting results from database', () => {
   test('returns results with all the fields', async () => {
     const res = await api.get('/results')
 
-    console.log(res.body)
     expect(res.body[0].id).toBeDefined()
     expect(res.body[0].player_id).toBeDefined()
     expect(res.body[0].time).toBeDefined()
