@@ -12,10 +12,19 @@ const SELECT_PLAYERS =
   'GROUP BY Player.id'
 
 const SELECT_TOURNAMENTS =
-  'SELECT Tournament.id, Tournament.account_id, Tournament.name, Tournament.created, Tournament.active, COALESCE(json_agg(Obstacle) FILTER (WHERE Obstacle.id IS NOT NULL), \'[]\') AS obstacles ' +
+  'SELECT Tournament.id, Tournament.name, Tournament.created, Tournament.active, json_build_object(\'id\', Account.id, \'name\', Account.name) AS account, COALESCE(json_agg(Obstacle) FILTER (WHERE Obstacle.id IS NOT NULL), \'[]\') AS obstacles ' +
   'FROM Tournament ' +
   'LEFT JOIN Obstacle ON Tournament.id = Obstacle.tournament_id ' +
-  'GROUP BY Tournament.id'
+  'LEFT JOIN Account ON Tournament.account_id = Account.id ' +
+  'GROUP BY Tournament.id, Account.id'
+
+const SELECT_TOURNAMENT_BY_ID =
+  'SELECT Tournament.id, Tournament.name, Tournament.created, Tournament.active, json_build_object(\'id\', Account.id, \'name\', Account.name) AS account, COALESCE(json_agg(Obstacle) FILTER (WHERE Obstacle.id IS NOT NULL), \'[]\') AS obstacles ' +
+  'FROM Tournament ' +
+  'LEFT JOIN Obstacle ON Tournament.id = Obstacle.tournament_id ' +
+  'LEFT JOIN Account ON Tournament.account_id = Account.id ' +
+  'WHERE Tournament.id = $1 ' +
+  'GROUP BY Tournament.id, Account.id'
 
 const SELECT_ACCOUNT =
   'SELECT * ' +
@@ -61,6 +70,13 @@ const UPDATE_TOURNAMENT =
   'WHERE id = $2 ' +
   'RETURNING *'
 
+const selectTournamentById = id => {
+  return {
+    text: SELECT_TOURNAMENT_BY_ID,
+    values: [id]
+  }
+}
+
 module.exports = {
   SELECT_RESULTS,
   SELECT_PLAYERS,
@@ -73,5 +89,6 @@ module.exports = {
   INSERT_TOURNAMENT,
   INSERT_OBSTACLE,
   UPDATE_TOURNAMENT,
-  INSERT_ACCOUNT
+  INSERT_ACCOUNT,
+  selectTournamentById
 }
