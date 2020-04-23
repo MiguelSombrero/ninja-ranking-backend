@@ -35,6 +35,7 @@ services:
         - ./db/:/app/db/
         - ./services/:/app/services/
         - ./tests/:/app/tests/
+        - ./app.js:/app/app.js
       container_name: ninja-back
       depends_on:
         - db
