@@ -13,26 +13,26 @@ beforeEach(async () => {
   await helper.initializeObstacles()
 
   login = await api
-    .post('/login')
+    .post('/api/login')
     .send({ username: 'somero', password: 'miika' })
 })
 
 describe('getting obstacles from database', () => {
   test('obstacles are returned as json', async () => {
     await api
-      .get('/obstacles')
+      .get('/api/obstacles')
       .expect(200)
       .expect('Content-Type', /application\/json/)
   })
 
   test('returns all obstacles', async () => {
     const initialObstacles = await helper.obstaclesInDb()
-    const res = await api.get('/obstacles')
+    const res = await api.get('/api/obstacles')
     expect(res.body.length).toBe(initialObstacles.length)
   })
 
   test('returns obstacles with all the fields', async () => {
-    const res = await api.get('/obstacles')
+    const res = await api.get('/api/obstacles')
 
     expect(res.body[0].id).toBeDefined()
     expect(res.body[0].name).toBeDefined()
@@ -50,7 +50,7 @@ describe('saving obstacles to database', () => {
     }
 
     const res = await api
-      .post('/obstacles')
+      .post('/api/obstacles')
       .send(obstacle)
       .expect(401)
       .expect('Content-Type', /application\/json/)
@@ -69,7 +69,7 @@ describe('saving obstacles to database', () => {
     }
 
     const res = await api
-      .post('/obstacles')
+      .post('/api/obstacles')
       .set('Authorization', 'Bearer ' + login.body.token)
       .send(obstacle)
       .expect(200)
@@ -91,7 +91,7 @@ describe('saving obstacles to database', () => {
     }
 
     const res = await api
-      .post('/obstacles')
+      .post('/api/obstacles')
       .set('Authorization', 'Bearer ' + login.body.token)
       .send(obstacle)
       .expect(400)

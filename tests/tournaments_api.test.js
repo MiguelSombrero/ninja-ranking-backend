@@ -13,30 +13,32 @@ beforeEach(async () => {
   await helper.initializeObstacles()
 
   login = await api
-    .post('/login')
+    .post('/api/login')
     .send({ username: 'somero', password: 'miika' })
 })
 
 describe('getting tournaments from database', () => {
   test('tournaments are returned as json', async () => {
     await api
-      .get('/tournaments')
+      .get('/api/tournaments')
       .expect(200)
       .expect('Content-Type', /application\/json/)
   })
 
   test('returns all tournaments', async () => {
     const initialTournaments = await helper.tournamentsInDb()
-    const res = await api.get('/tournaments')
+    const res = await api.get('/api/tournaments')
     expect(res.body.length).toBe(initialTournaments.length)
   })
 
   test('returns tournament with all the fields', async () => {
-    const res = await api.get('/tournaments')
+    const res = await api.get('/api/tournaments')
 
     expect(res.body[0].id).toBeDefined()
     expect(res.body[0].name).toBeDefined()
-    expect(res.body[0].account_id).toBeDefined()
+    expect(res.body[0].account.id).toBeDefined()
+    expect(res.body[0].account.name).toBeDefined()
+    expect(res.body[0].account.passwordhash).not.toBeDefined()
     expect(res.body[0].created).toBeDefined()
     expect(res.body[0].active).toBeDefined()
     expect(res.body[0].obstacles[0].id).toBeDefined()
@@ -53,7 +55,7 @@ describe('saving tournaments to database', () => {
     }
 
     const res = await api
-      .post('/tournaments')
+      .post('/api/tournaments')
       .send(tournament)
       .expect(401)
       .expect('Content-Type', /application\/json/)
@@ -71,7 +73,7 @@ describe('saving tournaments to database', () => {
     }
 
     const res = await api
-      .post('/tournaments')
+      .post('/api/tournaments')
       .set('Authorization', 'Bearer ' + login.body.token)
       .send(tournament)
       .expect(200)
@@ -79,7 +81,9 @@ describe('saving tournaments to database', () => {
 
     expect(res.body.id).toBeDefined()
     expect(res.body.name).toBe('Salainen turnaus')
-    expect(res.body.account_id).toBe(1)
+    expect(res.body.account.id).toBe(1)
+    expect(res.body.account.name).toBe('Miika Somero')
+    expect(res.body.passwordhash).not.toBeDefined()
     expect(res.body.created).toBeDefined()
     expect(res.body.active).toBe(true)
 
@@ -93,7 +97,7 @@ describe('saving tournaments to database', () => {
     const tournament = {}
 
     const res = await api
-      .post('/tournaments')
+      .post('/api/tournaments')
       .set('Authorization', 'Bearer ' + login.body.token)
       .send(tournament)
       .expect(400)
@@ -114,13 +118,56 @@ describe('updating tournament', () => {
     }
 
     const res = await api
-      .put('/tournaments/3')
+      .put('/api/tournaments/3')
       .send(tournament)
       .expect(401)
       .expect('Content-Type', /application\/json/)
 
     const tournamentsAtEnd = await helper.tournamentsInDb()
     expect(res.body.error).toContain('token is missing')
+    expect(initialTournaments.length).toBe(tournamentsAtEnd.length)
+  })
+
+  test('someone elses tournament cannot be updated', async () => {
+    const jukkaLogin = await api
+      .post('/api/login')
+      .send({ username: 'jukka', password: 'jukka' })
+
+    const tournament = {
+      active: false
+    }
+
+    const res = await api
+      .put('/api/tournaments/3')
+      .set('Authorization', 'Bearer ' + jukkaLogin.body.token)
+      .send(tournament)
+      .expect(401)
+      .expect('Content-Type', /application\/json/)
+
+    const updatedTournament = await helper.tournamentsInDb()
+
+    console.log(updatedTournament)
+    expect(updatedTournament[0].active).toBe(true)
+    expect(res.body.error).toBe('no authorization to update tournament')
+  })
+
+  test('gives error if updating tournament that doesnt exist', async () => {
+    const initialTournaments = await helper.tournamentsInDb()
+
+    const tournament = {
+      active: false
+    }
+
+    const res = await api
+      .put('/api/tournaments/323')
+      .set('Authorization', 'Bearer ' + login.body.token)
+      .send(tournament)
+      .expect(404)
+      .expect('Content-Type', /application\/json/)
+
+    const tournamentsAtEnd = await helper.tournamentsInDb()
+
+    expect(res.body.error).toBe('tournament not found')
     expect(initialTournaments.length).toBe(tournamentsAtEnd.length)
   })
 
@@ -132,7 +179,7 @@ describe('updating tournament', () => {
     }
 
     const res = await api
-      .put('/tournaments/3')
+      .put('/api/tournaments/3')
       .set('Authorization', 'Bearer ' + login.body.token)
       .send(tournament)
       .expect(200)

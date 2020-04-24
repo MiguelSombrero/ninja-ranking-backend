@@ -36,6 +36,7 @@ services:
         - ./services/:/app/services/
         - ./tests/:/app/tests/
         - ./app.js:/app/app.js
+        - ./nginx.dev.conf:/etc/nginx/nginx.conf
       container_name: ninja-back
       depends_on:
         - db

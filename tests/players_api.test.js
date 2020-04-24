@@ -15,26 +15,26 @@ beforeEach(async () => {
   await helper.initializeResults()
 
   login = await api
-    .post('/login')
+    .post('/api/login')
     .send({ username: 'somero', password: 'miika' })
 })
 
 describe('getting players from database', () => {
   test('players are returned as json', async () => {
     await api
-      .get('/players')
+      .get('/api/players')
       .expect(200)
       .expect('Content-Type', /application\/json/)
   })
 
   test('returns all players', async () => {
     const initialPlayers = await helper.playersInDb()
-    const res = await api.get('/players')
+    const res = await api.get('/api/players')
     expect(res.body.length).toBe(initialPlayers.length)
   })
 
   test('returns players with all the fields', async () => {
-    const res = await api.get('/players')
+    const res = await api.get('/api/players')
 
     expect(res.body[0].id).toBeDefined()
     expect(res.body[0].nickname).toBeDefined()
@@ -53,7 +53,7 @@ describe('saving players to database', () => {
     }
 
     const res = await api
-      .post('/players')
+      .post('/api/players')
       .send(player)
       .expect(401)
       .expect('Content-Type', /application\/json/)
@@ -72,7 +72,7 @@ describe('saving players to database', () => {
     }
 
     const res = await api
-      .post('/players')
+      .post('/api/players')
       .set('Authorization', 'Bearer ' + login.body.token)
       .send(player)
       .expect(200)
@@ -94,7 +94,7 @@ describe('saving players to database', () => {
     }
 
     const res = await api
-      .post('/players')
+      .post('/api/players')
       .set('Authorization', 'Bearer ' + login.body.token)
       .send(player)
       .expect(400)

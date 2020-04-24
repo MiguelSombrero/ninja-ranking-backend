@@ -20,7 +20,7 @@ describe('saving accounts to database', () => {
     }
 
     const res = await api
-      .post('/accounts')
+      .post('/api/accounts')
       .send(account)
       .expect(200)
       .expect('Content-Type', /application\/json/)
@@ -45,7 +45,7 @@ describe('saving accounts to database', () => {
     }
 
     const res = await api
-      .post('/accounts')
+      .post('/api/accounts')
       .send(account)
       .expect(400)
       .expect('Content-Type', /application\/json/)
@@ -65,7 +65,7 @@ describe('saving accounts to database', () => {
     }
 
     const res = await api
-      .post('/accounts')
+      .post('/api/accounts')
       .send(account)
       .expect(401)
       .expect('Content-Type', /application\/json/)
@@ -86,7 +86,7 @@ describe('saving accounts to database', () => {
     }
 
     const res = await api
-      .post('/accounts')
+      .post('/api/accounts')
       .send(account)
       .expect(401)
       .expect('Content-Type', /application\/json/)
@@ -105,7 +105,7 @@ describe('saving accounts to database', () => {
     }
 
     const res = await api
-      .post('/accounts')
+      .post('/api/accounts')
       .send(account)
       .expect(400)
       .expect('Content-Type', /application\/json/)
@@ -124,7 +124,7 @@ describe('saving accounts to database', () => {
     }
 
     const res = await api
-      .post('/accounts')
+      .post('/api/accounts')
       .send(account)
       .expect(400)
       .expect('Content-Type', /application\/json/)

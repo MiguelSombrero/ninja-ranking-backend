@@ -15,26 +15,26 @@ beforeEach(async () => {
   await helper.initializeResults()
 
   login = await api
-    .post('/login')
+    .post('/api/login')
     .send({ username: 'somero', password: 'miika' })
 })
 
 describe('getting results from database', () => {
   test('results are returned as json', async () => {
     await api
-      .get('/results')
+      .get('/api/results')
       .expect(200)
       .expect('Content-Type', /application\/json/)
   })
 
   test('returns all results', async () => {
     const initialResults = await helper.resultsInDb()
-    const res = await api.get('/results')
+    const res = await api.get('/api/results')
     expect(res.body.length).toBe(initialResults.length)
   })
 
   test('returns results with all the fields', async () => {
-    const res = await api.get('/results')
+    const res = await api.get('/api/results')
 
     expect(res.body[0].id).toBeDefined()
     expect(res.body[0].player_id).toBeDefined()
@@ -54,7 +54,7 @@ describe('saving results to database', () => {
     }
 
     const res = await api
-      .post('/results')
+      .post('/api/results')
       .send(result)
       .expect(401)
       .expect('Content-Type', /application\/json/)
@@ -74,7 +74,7 @@ describe('saving results to database', () => {
     }
 
     const res = await api
-      .post('/results')
+      .post('/api/results')
       .set('Authorization', 'Bearer ' + login.body.token)
       .send(result)
       .expect(200)
@@ -99,7 +99,7 @@ describe('saving results to database', () => {
     }
 
     const res = await api
-      .post('/results')
+      .post('/api/results')
       .set('Authorization', 'Bearer ' + login.body.token)
       .send(result)
       .expect(400)
@@ -119,7 +119,7 @@ describe('saving results to database', () => {
     }
 
     const res = await api
-      .post('/results')
+      .post('/api/results')
       .set('Authorization', 'Bearer ' + login.body.token)
       .send(result)
       .expect(400)

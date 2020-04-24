@@ -35,12 +35,13 @@ const validateToken = (req, res, next) => {
   }
 
   req.account_id = decodedToken.id
-
   next()
 }
 
-const unknownEndpoint =  (req, res) => {
-  res.status(404).send({ error: 'unknown endpoint' })
+const unknownEndpoint = (req, res) => {
+  res.status(404).send({
+    error: 'unknown endpoint'
+  })
 }
 
 const errorHandler = (error, req, res, next) => {

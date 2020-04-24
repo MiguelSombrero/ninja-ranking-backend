@@ -1,4 +1,5 @@
 const { executeQuery } = require('../services/dbService')
+const jwt = require('jsonwebtoken')
 const middleware = require('../utils/middleware')
 const tournamentsRouter = require('express').Router()
 const {
@@ -45,9 +46,25 @@ tournamentsRouter.put('/:id', middleware.validateToken, async (req, res, next) =
   }
 
   try {
-    await executeQuery(query, next)
+    const decodedToken = jwt.verify(req.token, process.env.SECRET)
     const rows = await executeQuery(selectTournamentById(tournament_id), next)
-    res.json(rows[0])
+    const tournament = rows[0]
+
+    if (!tournament) {
+      return res.status(404).send({
+        error: 'tournament not found'
+      })
+    }
+
+    if (decodedToken.id !== tournament.account.id) {
+      return res.status(401).send({
+        error: 'no authorization to update tournament'
+      })
+    }
+
+    await executeQuery(query, next)
+    const updatedRows = await executeQuery(selectTournamentById(tournament_id), next)
+    res.json(updatedRows[0])
 
   } catch(exception) {
     next(exception)

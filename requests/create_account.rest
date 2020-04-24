@@ -2,7 +2,7 @@ post http://localhost/api/accounts
 Content-Type: application/json
 
 {
-  "name": "Raija Saarala",
-  "username": "raija",
-  "password": "raija"
+  "name": "Liisa Jaakonsaari",
+  "username": "liisa",
+  "password": "liisa"
 }
