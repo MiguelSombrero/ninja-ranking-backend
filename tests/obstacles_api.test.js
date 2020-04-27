@@ -60,6 +60,30 @@ describe('saving obstacles to database', () => {
     expect(initialObstacles.length).toBe(obstaclesAtEnd.length)
   })
 
+  test('obstacle cannot be added to someone elses tournament', async () => {
+    const jukkaLogin = await api
+      .post('/api/login')
+      .send({ username: 'jukka', password: 'jukka' })
+
+    const initialObstacles = await helper.obstaclesInDb()
+
+    const obstacle = {
+      tournament_id: 3,
+      name: 'Paini'
+    }
+
+    const res = await api
+      .post('/api/obstacles')
+      .set('Authorization', 'Bearer ' + jukkaLogin.body.token)
+      .send(obstacle)
+      .expect(401)
+      .expect('Content-Type', /application\/json/)
+
+    const obstaclesAtEnd = await helper.obstaclesInDb()
+    expect(res.body.error).toContain('no authorization to modify tournament')
+    expect(initialObstacles.length).toBe(obstaclesAtEnd.length)
+  })
+
   test('valid obstacle can be added to db', async () => {
     const initialObstacles = await helper.obstaclesInDb()
 

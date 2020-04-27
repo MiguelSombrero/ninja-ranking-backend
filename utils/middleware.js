@@ -1,5 +1,7 @@
 const logger = require('./logger')
 const jwt = require('jsonwebtoken')
+const { executeQuery } = require('../services/dbService')
+const { selectTournamentById } = require('../db/queries')
 
 const requestLogger = (req, res, next) => {
   logger.info('Method:', req.method)
@@ -38,6 +40,23 @@ const validateToken = (req, res, next) => {
   next()
 }
 
+const authorize = async (req, res, next) => {
+  try {
+    const tournamentRows = await executeQuery(selectTournamentById(req.body.tournament_id), next)
+    const tournament = tournamentRows[0]
+
+    if (!tournament || req.account_id !== tournament.account.id) {
+      return res.status(401).send({
+        error: 'no authorization to modify tournament'
+      })
+    }
+  } catch (exception) {
+    next(exception)
+  }
+
+  next()
+}
+
 const unknownEndpoint = (req, res) => {
   res.status(404).send({
     error: 'unknown endpoint'
@@ -68,5 +87,6 @@ module.exports = {
   unknownEndpoint,
   tokenExtractor,
   validateToken,
-  errorHandler
+  errorHandler,
+  authorize
 }

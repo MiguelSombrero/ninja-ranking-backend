@@ -13,7 +13,7 @@ playersRouter.get('/', async (req, res, next) => {
   }
 })
 
-playersRouter.post('/', middleware.validateToken, async (req, res, next) => {
+playersRouter.post('/', middleware.validateToken, middleware.authorize, async (req, res, next) => {
   const { tournament_id, nickname } = req.body
 
   const query = {
@@ -22,10 +22,7 @@ playersRouter.post('/', middleware.validateToken, async (req, res, next) => {
   }
 
   try {
-    const rows = await executeQuery(
-      query, next
-    )
-
+    const rows = await executeQuery(query, next)
     res.json({ ...rows[0], results: [] })
 
   } catch (exception) {

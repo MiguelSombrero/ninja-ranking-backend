@@ -146,7 +146,6 @@ describe('updating tournament', () => {
 
     const updatedTournament = await helper.tournamentsInDb()
 
-    console.log(updatedTournament)
     expect(updatedTournament[0].active).toBe(true)
     expect(res.body.error).toBe('no authorization to update tournament')
   })

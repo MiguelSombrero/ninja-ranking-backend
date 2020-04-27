@@ -63,6 +63,30 @@ describe('saving players to database', () => {
     expect(initialPlayers.length).toBe(playersAtEnd.length)
   })
 
+  test('player cannot be added to someone elses tournament', async () => {
+    const jukkaLogin = await api
+      .post('/api/login')
+      .send({ username: 'jukka', password: 'jukka' })
+
+    const initialPlayers = await helper.playersInDb()
+
+    const player = {
+      tournament_id: 3,
+      nickname: 'Riku'
+    }
+
+    const res = await api
+      .post('/api/players')
+      .set('Authorization', 'Bearer ' + jukkaLogin.body.token)
+      .send(player)
+      .expect(401)
+      .expect('Content-Type', /application\/json/)
+
+    const playersAtEnd = await helper.playersInDb()
+    expect(res.body.error).toContain('no authorization to modify tournament')
+    expect(initialPlayers.length).toBe(playersAtEnd.length)
+  })
+
   test('valid player can be added to db', async () => {
     const initialPlayers = await helper.playersInDb()
 
